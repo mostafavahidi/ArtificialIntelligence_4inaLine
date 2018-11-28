@@ -3,13 +3,13 @@ package player;
 public enum Player {
 	OPPONENT('O'), COMPUTER('C');
 
-	private char val;
+	private char value;
 
-	Player(char val) {
-		this.val = val;
+	Player(char value) {
+		this.value = value;
 	}
 
-	public char getVal() {
-		return val;
+	public char value() {
+		return value;
 	}
 }
