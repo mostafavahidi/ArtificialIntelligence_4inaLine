@@ -19,12 +19,12 @@ public class State {
 	}
 
 	/**
-	 * Return successors of current state as a list of actions.
+	 * Return successors of current state as a list of states.
 	 * 
 	 * @return List of possible actions
 	 */
-	public List<Action> getSuccessors() {
-		List<Action> successors = new ArrayList<>();
+	public List<State> getSuccessors() {
+		List<State> successors = new ArrayList<>();
 		final char DEFAULT = '\u0000';
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
