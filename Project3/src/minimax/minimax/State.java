@@ -18,6 +18,19 @@ public class State {
 		board[action.getRow()][action.getCol()] = action.getPlayer().value();
 	}
 
+	private State createState(int row, int col, State currentState) {
+		State newState = new State();
+		char[][] newBoard = newState.getBoard();
+		char[][] currentBoard = currentState.getBoard();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				newBoard[i][j] = currentBoard[i][j];
+			}
+		}
+		newBoard[row][col] = Player.COMPUTER.value();
+		return newState;
+	}
+
 	/**
 	 * Return successors of current state as a list of states.
 	 * 
@@ -29,7 +42,7 @@ public class State {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (board[i][j] == DEFAULT) {
-					successors.add(new Action(i, j, Player.COMPUTER));
+					successors.add(createState(i, j, this));
 				}
 			}
 		}
