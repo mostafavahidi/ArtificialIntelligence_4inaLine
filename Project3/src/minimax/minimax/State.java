@@ -6,7 +6,7 @@ import java.util.List;
 import player.Player;
 
 public class State {
-	private static final int N = 8;
+	public static final int N = 8;
 	private int v = 0;
 	private char[][] board;
 
