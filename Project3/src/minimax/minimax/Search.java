@@ -2,6 +2,8 @@ package minimax;
 
 import java.time.Instant;
 
+import player.Player;
+
 public class Search {
 
 	public State a_b_search(State state) {
@@ -24,7 +26,7 @@ public class Search {
 	public int maxVal(State state, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return utility(state);
+			return utility(state, Player.COMPUTER);
 		}
 
 		state.setV(1000000);
@@ -45,7 +47,7 @@ public class Search {
 	public int minVal(State state, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return utility(state);
+			return utility(state, Player.OPPONENT);
 		}
 
 		state.setV(1000000);
@@ -69,20 +71,20 @@ public class Search {
 	public boolean terminalTest(State state) {
 			char[][] board = state.getBoard();
 			
-		    final int BOARD_H = state.N;
-		    final int BOARD_W = state.N;
+		    final int DIM = state.N;
+		    
 		    final char EMPTY_SPACE = '\u0000';
-		    for (int r = 0; r < BOARD_H; r++) {
-		        for (int c = 0; c < BOARD_W; c++) {
+		    for (int r = 0; r < DIM; r++) {
+		        for (int c = 0; c < DIM; c++) {
 		             char player = board[r][c];
 		            if (player == EMPTY_SPACE)
 		                continue;
-		            if (c + 3 < BOARD_W &&
+		            if (c + 3 < DIM &&
 		                player == board[r][c+1] &&
 		                player == board[r][c+2] &&
 		                player == board[r][c+3])
 		                return true;
-		            if (r + 3 < BOARD_H) {
+		            if (r + 3 < DIM) {
 		                if (player == board[r+1][c] &&
 		                    player == board[r+2][c] &&
 		                    player == board[r+3][c])
