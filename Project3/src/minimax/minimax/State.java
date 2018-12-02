@@ -8,7 +8,7 @@ import player.Player;
 public class State {
 	private static final int N = 8;
 	private int v = 0;
-	char[][] board;
+	private char[][] board;
 
 	State() {
 		board = new char[N][N];
@@ -35,13 +35,17 @@ public class State {
 		}
 		return successors;
 	}
-	
+
 	public void setV(int newV) {
 		this.v = newV;
 	}
-	
+
 	public int getV() {
 		return this.v;
+	}
+
+	public char[][] getBoard() {
+		return board;
 	}
 
 }
