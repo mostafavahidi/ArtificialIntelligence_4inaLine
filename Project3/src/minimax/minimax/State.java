@@ -56,6 +56,10 @@ public class State {
 	public int getV() {
 		return this.v;
 	}
+	
+	public char[][] getBoard(){
+		return this.board;
+	}
 
 	public char[][] getBoard() {
 		return board;
