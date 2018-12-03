@@ -76,7 +76,7 @@ public class Search {
 
 			char[][] board = state.getBoard();
 			
-		    final int DIM = state.N;
+		    final int DIM = State.N;
 		    
 		    final char EMPTY_SPACE = '\u0000';
 		    for (int r = 0; r < DIM; r++) {
