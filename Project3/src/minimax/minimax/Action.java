@@ -24,7 +24,7 @@ public class Action {
 	public Player getPlayer() {
 		return player;
 	}
-
+	
 	public static Action createAction(String moveToMake) {
 		int actionRow = 0;
 		int actionCol = 0;

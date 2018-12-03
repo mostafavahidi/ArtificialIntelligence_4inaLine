@@ -3,8 +3,6 @@ package minimax.minimax;
 
 import java.util.List;
 
-import player.Player;
-
 public class Search {
 
 	public State a_b_search(State state) {

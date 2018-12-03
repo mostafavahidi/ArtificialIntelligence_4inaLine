@@ -82,7 +82,8 @@ public class State {
 			for (int c = 0; c < DIM; c++) {
 				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsRow++;
-				} else {
+				}
+				if (getBoard()[r][c] == Player.OPPONENT.value()){
 					oppTopNumCharsRow++;
 				}
 			}
@@ -101,7 +102,8 @@ public class State {
 			for (int r = 0; r < DIM; r++) {
 				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsCol++;
-				} else {
+				}
+				if (getBoard()[r][c] == Player.OPPONENT.value()){
 					oppTopNumCharsCol++;
 				}
 			}
@@ -114,7 +116,11 @@ public class State {
 		}
 
 		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
-		return utilityVal; // Returning the utility value otherwise.
+
+		System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col: " + compTopNumCharsCol);
+		System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " + oppTopNumCharsCol);
+		System.out.println(utilityVal);
+		return utilityVal; //Returning the utility value otherwise.
 	}
 
 	public void setV(int newV) {
@@ -126,7 +132,7 @@ public class State {
 	}
 
 	public char[][] getBoard() {
-		return board;
+		return this.board;
 	}
 
 	public Action getMostRecentAction() {
