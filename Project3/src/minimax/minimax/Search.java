@@ -28,7 +28,7 @@ public class Search {
 	public int maxVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return utility(state, Player.COMPUTER);
+			return state.utility(Player.COMPUTER);
 		}
 
 		state.setV(1000000);
@@ -50,7 +50,7 @@ public class Search {
 	public int minVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return utility(state, Player.OPPONENT);
+			return state.utility(Player.OPPONENT);
 		}
 
 		state.setV(1000000);
@@ -66,11 +66,7 @@ public class Search {
 		}
 		return v;
 	}
-
-	private int utility(State state) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 
 	public boolean terminalTest(State state) {
 

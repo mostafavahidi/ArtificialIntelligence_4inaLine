@@ -9,6 +9,7 @@ public class State {
 	public static final int N = 8;
 	private int v = 0;
 	private char[][] board;
+	private int numPieces = 0;
 
 	State() {
 		board = new char[N][N];
@@ -16,6 +17,7 @@ public class State {
 
 	public void move(Action action) {
 		board[action.getRow()][action.getCol()] = action.getPlayer().value();
+		numPieces++;
 	}
 
 	private State createState(int row, int col, State currentState) {
@@ -49,7 +51,12 @@ public class State {
 		return successors;
 	}
 
-	public int utility(State state, Player player) {
+	public int utility(Player player) {
+		
+		if (numPieces == this.N * this.N) {
+			return 0; //Returning 0 if the board is filled up and there is a draw.
+		}
+		
 		final int DIM = N;
 
 		int compTopNumCharsRow = 0;
@@ -63,7 +70,7 @@ public class State {
 			int compNumCharsRow = 0;
 			int oppNumCharsRow = 0;
 			for (int c = 0; c < DIM; c++) {
-				if (state.getBoard()[r][c] == player.value()) {
+				if (getBoard()[r][c] == player.value()) {
 					compTopNumCharsRow++;
 				} else {
 					oppTopNumCharsRow++;
@@ -82,7 +89,7 @@ public class State {
 			int compNumCharsCol = 0;
 			int oppNumCharsCol = 0;
 			for (int r = 0; r < DIM; r++) {
-				if (state.getBoard()[r][c] == player.value()) {
+				if (getBoard()[r][c] == player.value()) {
 					compTopNumCharsCol++;
 				} else {
 					oppTopNumCharsCol++;
@@ -95,6 +102,9 @@ public class State {
 				oppTopNumCharsCol = oppNumCharsCol;
 			}
 		}
+		
+		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
+		return utilityVal; //Returning the utility value otherwise.
 	}
 
 	public void setV(int newV) {
