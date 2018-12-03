@@ -1,7 +1,6 @@
 
-package minimax;
+package minimax.minimax;
 
-import java.time.Instant;
 import java.util.List;
 
 import player.Player;
@@ -28,7 +27,7 @@ public class Search {
 	public int maxVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return state.utility(Player.COMPUTER);
+			return state.utility();
 		}
 
 		state.setV(1000000);
@@ -50,7 +49,7 @@ public class Search {
 	public int minVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return state.utility(Player.OPPONENT);
+			return state.utility();
 		}
 
 		state.setV(1000000);
@@ -66,34 +65,28 @@ public class Search {
 		}
 		return v;
 	}
-	
 
 	public boolean terminalTest(State state) {
 
-			char[][] board = state.getBoard();
-			
-		    final int DIM = State.N;
-		    
-		    final char EMPTY_SPACE = '\u0000';
-		    for (int r = 0; r < DIM; r++) {
-		        for (int c = 0; c < DIM; c++) {
-		             char player = board[r][c];
-		            if (player == EMPTY_SPACE)
-		                continue;
-		            if (c + 3 < DIM &&
-		                player == board[r][c+1] &&
-		                player == board[r][c+2] &&
-		                player == board[r][c+3])
-		                return true;
-		            if (r + 3 < DIM) {
-		                if (player == board[r+1][c] &&
-		                    player == board[r+2][c] &&
-		                    player == board[r+3][c])
-		                    return true;
-		            }
-		        }
-		    }
-		    return false; // no winner found
+		char[][] board = state.getBoard();
+
+		final int DIM = State.N;
+
+		final char EMPTY_SPACE = '\u0000';
+		for (int r = 0; r < DIM; r++) {
+			for (int c = 0; c < DIM; c++) {
+				char player = board[r][c];
+				if (player == EMPTY_SPACE)
+					continue;
+				if (c + 3 < DIM && player == board[r][c + 1] && player == board[r][c + 2] && player == board[r][c + 3])
+					return true;
+				if (r + 3 < DIM) {
+					if (player == board[r + 1][c] && player == board[r + 2][c] && player == board[r + 3][c])
+						return true;
+				}
+			}
+		}
+		return false; // no winner found
 
 	}
 

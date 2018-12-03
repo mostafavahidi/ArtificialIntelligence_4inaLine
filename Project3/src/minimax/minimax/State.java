@@ -1,4 +1,4 @@
-package minimax;
+package minimax.minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,7 @@ public class State {
 	private int v = 0;
 	private char[][] board;
 	private int numPieces = 0;
+	private Action mostRecentAction;
 
 	State() {
 		board = new char[N][N];
@@ -30,6 +31,7 @@ public class State {
 			}
 		}
 		newBoard[row][col] = Player.COMPUTER.value();
+		newState.setMostRecentAction(new Action(row, col, Player.COMPUTER));
 		return newState;
 	}
 
@@ -51,12 +53,13 @@ public class State {
 		return successors;
 	}
 
-	public int utility(Player player) {
-		
-		if (numPieces == this.N * this.N) {
-			return 0; //Returning 0 if the board is filled up and there is a draw.
+	public int utility() {
+
+		if (numPieces == N * N) {
+			return 0; // Returning 0 if the board is filled up and there is a
+						// draw.
 		}
-		
+
 		final int DIM = N;
 
 		int compTopNumCharsRow = 0;
@@ -70,7 +73,7 @@ public class State {
 			int compNumCharsRow = 0;
 			int oppNumCharsRow = 0;
 			for (int c = 0; c < DIM; c++) {
-				if (getBoard()[r][c] == player.value()) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsRow++;
 				} else {
 					oppTopNumCharsRow++;
@@ -89,7 +92,7 @@ public class State {
 			int compNumCharsCol = 0;
 			int oppNumCharsCol = 0;
 			for (int r = 0; r < DIM; r++) {
-				if (getBoard()[r][c] == player.value()) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsCol++;
 				} else {
 					oppTopNumCharsCol++;
@@ -102,9 +105,10 @@ public class State {
 				oppTopNumCharsCol = oppNumCharsCol;
 			}
 		}
-		
+
 		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
-		return utilityVal; //Returning the utility value otherwise.
+		System.out.println(utilityVal);
+		return utilityVal; // Returning the utility value otherwise.
 	}
 
 	public void setV(int newV) {
@@ -117,6 +121,14 @@ public class State {
 
 	public char[][] getBoard() {
 		return board;
+	}
+
+	public Action getMostRecentAction() {
+		return mostRecentAction;
+	}
+
+	public void setMostRecentAction(Action mostRecentAction) {
+		this.mostRecentAction = mostRecentAction;
 	}
 
 }
