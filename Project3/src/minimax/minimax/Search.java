@@ -16,10 +16,10 @@ public class Search {
 
 		for (State nextState : successors) {
 			if (nextState.getV() == v) {
-				currentState = nextState;
+				return nextState;
 			}
 		}
-		return currentState;
+		return null;
 
 	}
 
@@ -30,7 +30,7 @@ public class Search {
 			return state.utility();
 		}
 
-		state.setV(1000000);
+		state.setV(-1000000);
 		int v = state.getV();
 		List<State> nextSuccessors;
 		for (State nextState : successors) {

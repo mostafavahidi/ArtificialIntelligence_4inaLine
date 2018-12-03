@@ -18,6 +18,7 @@ public class State {
 
 	public void move(Action action) {
 		board[action.getRow()][action.getCol()] = action.getPlayer().value();
+		mostRecentAction = action;
 		numPieces++;
 	}
 
@@ -30,8 +31,14 @@ public class State {
 				newBoard[i][j] = currentBoard[i][j];
 			}
 		}
-		newBoard[row][col] = Player.COMPUTER.value();
-		newState.setMostRecentAction(new Action(row, col, Player.COMPUTER));
+		if (currentState.getMostRecentAction().getPlayer() == Player.COMPUTER) {
+			newBoard[row][col] = Player.OPPONENT.value();
+			newState.setMostRecentAction(new Action(row, col, Player.OPPONENT));
+		} else if (currentState.getMostRecentAction().getPlayer() == Player.OPPONENT) {
+			newBoard[row][col] = Player.COMPUTER.value();
+			newState.setMostRecentAction(new Action(row, col, Player.COMPUTER));
+		}
+
 		return newState;
 	}
 
@@ -107,7 +114,6 @@ public class State {
 		}
 
 		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
-		System.out.println(utilityVal);
 		return utilityVal; // Returning the utility value otherwise.
 	}
 
@@ -129,6 +135,22 @@ public class State {
 
 	public void setMostRecentAction(Action mostRecentAction) {
 		this.mostRecentAction = mostRecentAction;
+	}
+
+	@Override
+	public String toString() {
+		String s = "";
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (board[i][j] == '\u0000') {
+					s += "-";
+				} else {
+					s += board[i][j];
+				}
+			}
+			s += "\n";
+		}
+		return s;
 	}
 
 }
