@@ -1,4 +1,4 @@
-package minimax;
+package minimax.minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +25,21 @@ public class Main {
 	private static void run(State state, Search searcher, boolean aiFirst) {
 		Action opponentMove = null;
 		Action playerAction = null;
+		Timer timer;
 		while (!searcher.terminalTest(state)) {
+			// Start the 25 second timer
+			
 			if (!aiFirst) {
 				opponentMove = Action.createAction(getOpponentMove());
 				ACTIONS.add(opponentMove);
 				state.move(opponentMove);
 				state = searcher.a_b_search(state);
+				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
 			}
 			if (aiFirst) {
 				state = searcher.a_b_search(state);
+				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
 				opponentMove = Action.createAction(getOpponentMove());
 				state.move(opponentMove);
@@ -64,10 +69,10 @@ public class Main {
 				System.out.println(board[i][j]);
 			}
 			System.out.print(TAB);
-			System.out.print(ACTIONS.get(currentAction));
+			System.out.print(ACTIONS.get(currentAction).toString());
 			currentAction++;
 			System.out.print(TAB);
-			System.out.println(ACTIONS.get(currentAction));
+			System.out.println(ACTIONS.get(currentAction).toString());
 			currentAction++;
 		}
 		System.out.print("Player's move is: ");

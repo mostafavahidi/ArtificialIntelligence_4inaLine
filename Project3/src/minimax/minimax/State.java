@@ -1,4 +1,4 @@
-package minimax;
+package minimax.minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,7 @@ public class State {
 	private int v = 0;
 	private char[][] board;
 	private int numPieces = 0;
+	private Action mostRecentAction;
 
 	State() {
 		board = new char[N][N];
@@ -30,6 +31,7 @@ public class State {
 			}
 		}
 		newBoard[row][col] = Player.COMPUTER.value();
+		newState.setMostRecentAction(new Action(row, col, Player.COMPUTER));
 		return newState;
 	}
 
@@ -52,11 +54,12 @@ public class State {
 	}
 
 	public int utility() {
-		
-		if (this.numPieces == this.N * this.N) {
-			return 0; //Returning 0 if the board is filled up and there is a draw.
+
+		if (numPieces == N * N) {
+			return 0; // Returning 0 if the board is filled up and there is a
+						// draw.
 		}
-		
+
 		final int DIM = N;
 
 		int compTopNumCharsRow = 0;
@@ -104,7 +107,7 @@ public class State {
 				oppTopNumCharsCol = oppNumCharsCol;
 			}
 		}
-		
+
 		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
 		System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col: " + compTopNumCharsCol);
 		System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " + oppTopNumCharsCol);
@@ -122,6 +125,14 @@ public class State {
 
 	public char[][] getBoard() {
 		return this.board;
+	}
+
+	public Action getMostRecentAction() {
+		return mostRecentAction;
+	}
+
+	public void setMostRecentAction(Action mostRecentAction) {
+		this.mostRecentAction = mostRecentAction;
 	}
 
 }
