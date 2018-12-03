@@ -9,21 +9,37 @@ public class Main {
 	private static final List<Action> ACTIONS = new ArrayList<>();
 
 	public static void main(String[] args) {
-
+		Search searcher = new Search();
+		State state = new State();
+		System.out.print("Who goes first, player or opponent? [p/o]: ");
+		String whoGoesFirst = scanner.nextLine();
+		boolean aiFirst = true;
+		if (whoGoesFirst.matches("[pP]")) {
+			aiFirst = true;
+		} else if (whoGoesFirst.matches("[oO]")) {
+			aiFirst = false;
+		}
+		run(state, searcher, aiFirst);
 	}
 
-	private static void run(State state, Action playerAction, boolean aiFirst) {
-		ACTIONS.add(playerAction);
-		String opponentMove = null;
-		if (!aiFirst) {
-			opponentMove = getOpponentMove();
-			ACTIONS.add(Action.createAction(opponentMove));
-			printBoard(state, playerAction, aiFirst);
-		}
-		if (aiFirst) {
-			printBoard(state, playerAction, aiFirst);
-			opponentMove = getOpponentMove();
-			ACTIONS.add(Action.createAction(opponentMove));
+	private static void run(State state, Search searcher, boolean aiFirst) {
+		Action opponentMove = null;
+		Action playerAction = null;
+		while (!searcher.terminalTest(state)) {
+			if (!aiFirst) {
+				opponentMove = Action.createAction(getOpponentMove());
+				ACTIONS.add(opponentMove);
+				state.move(opponentMove);
+				state = searcher.a_b_search(state);
+				printBoard(state, playerAction, aiFirst);
+			}
+			if (aiFirst) {
+				state = searcher.a_b_search(state);
+				printBoard(state, playerAction, aiFirst);
+				opponentMove = Action.createAction(getOpponentMove());
+				state.move(opponentMove);
+				ACTIONS.add(opponentMove);
+			}
 		}
 	}
 
