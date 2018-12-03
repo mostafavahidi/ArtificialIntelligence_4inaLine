@@ -1,29 +1,31 @@
+
 package minimax;
 
 import java.time.Instant;
+import java.util.List;
 
 import player.Player;
 
 public class Search {
 
 	public State a_b_search(State state) {
-		Instant startTime = Instant.now();
-		int v = maxVal(state, -1000000, 1000000);
+		List<State> successors = state.getSuccessors();
+		int v = maxVal(state, successors, -1000000, 1000000);
 		// Todo: return the action in Successors(state) with value v
 
-		State nextState = statesList[0];
-		
-		for (State stateIterator : statesList) {
-			if (stateIterator.getV() == v) {
-				nextState = stateIterator;
+		State currentState = successors.get(0);
+
+		for (State nextState : successors) {
+			if (nextState.getV() == v) {
+				currentState = nextState;
 			}
 		}
-		return nextState;
+		return currentState;
 
 	}
 
 	// Returns a utility value
-	public int maxVal(State state, int alpha, int beta) {
+	public int maxVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
 			return utility(state, Player.COMPUTER);
@@ -31,9 +33,10 @@ public class Search {
 
 		state.setV(1000000);
 		int v = state.getV();
-
-		for (State successorState : statesList) {
-			v = Math.max(v, minVal(successorState, alpha, beta));
+		List<State> nextSuccessors;
+		for (State nextState : successors) {
+			nextSuccessors = nextState.getSuccessors();
+			v = Math.max(v, minVal(nextState, nextSuccessors, alpha, beta));
 			if (v >= beta) {
 				return v;
 			}
@@ -44,7 +47,7 @@ public class Search {
 	}
 
 	// Returns a utility value
-	public int minVal(State state, int alpha, int beta) {
+	public int minVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
 			return utility(state, Player.OPPONENT);
@@ -52,9 +55,10 @@ public class Search {
 
 		state.setV(1000000);
 		int v = state.getV();
-
-		for (State successorState : statesList) {
-			v = Math.min(v, maxVal(successorState, alpha, beta));
+		List<State> nextSuccessors;
+		for (State nextState : successors) {
+			nextSuccessors = nextState.getSuccessors();
+			v = Math.min(v, maxVal(nextState, nextSuccessors, alpha, beta));
 			if (v <= alpha) {
 				return v;
 			}
@@ -69,6 +73,7 @@ public class Search {
 	}
 
 	public boolean terminalTest(State state) {
+
 			char[][] board = state.getBoard();
 			
 		    final int DIM = state.N;
@@ -93,6 +98,7 @@ public class Search {
 		        }
 		    }
 		    return false; // no winner found
+
 	}
-	
+
 }
