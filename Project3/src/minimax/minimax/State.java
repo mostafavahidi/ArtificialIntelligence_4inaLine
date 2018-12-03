@@ -51,9 +51,9 @@ public class State {
 		return successors;
 	}
 
-	public int utility(Player player) {
+	public int utility() {
 		
-		if (numPieces == this.N * this.N) {
+		if (this.numPieces == this.N * this.N) {
 			return 0; //Returning 0 if the board is filled up and there is a draw.
 		}
 		
@@ -70,9 +70,10 @@ public class State {
 			int compNumCharsRow = 0;
 			int oppNumCharsRow = 0;
 			for (int c = 0; c < DIM; c++) {
-				if (getBoard()[r][c] == player.value()) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsRow++;
-				} else {
+				}
+				if (getBoard()[r][c] == Player.OPPONENT.value()){
 					oppTopNumCharsRow++;
 				}
 			}
@@ -89,9 +90,10 @@ public class State {
 			int compNumCharsCol = 0;
 			int oppNumCharsCol = 0;
 			for (int r = 0; r < DIM; r++) {
-				if (getBoard()[r][c] == player.value()) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsCol++;
-				} else {
+				}
+				if (getBoard()[r][c] == Player.OPPONENT.value()){
 					oppTopNumCharsCol++;
 				}
 			}
@@ -104,6 +106,9 @@ public class State {
 		}
 		
 		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
+		System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col: " + compTopNumCharsCol);
+		System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " + oppTopNumCharsCol);
+		System.out.println(utilityVal);
 		return utilityVal; //Returning the utility value otherwise.
 	}
 
@@ -116,7 +121,7 @@ public class State {
 	}
 
 	public char[][] getBoard() {
-		return board;
+		return this.board;
 	}
 
 }

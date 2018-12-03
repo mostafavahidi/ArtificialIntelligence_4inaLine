@@ -1,10 +1,7 @@
 
 package minimax;
 
-import java.time.Instant;
 import java.util.List;
-
-import player.Player;
 
 public class Search {
 
@@ -28,10 +25,10 @@ public class Search {
 	public int maxVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return state.utility(Player.COMPUTER);
+			return state.utility();
 		}
 
-		state.setV(1000000);
+		state.setV(-1000000);
 		int v = state.getV();
 		List<State> nextSuccessors;
 		for (State nextState : successors) {
@@ -50,7 +47,7 @@ public class Search {
 	public int minVal(State state, List<State> successors, int alpha, int beta) {
 
 		if (terminalTest(state)) {
-			return state.utility(Player.OPPONENT);
+			return state.utility();
 		}
 
 		state.setV(1000000);
