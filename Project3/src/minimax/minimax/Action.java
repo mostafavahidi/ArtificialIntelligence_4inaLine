@@ -24,4 +24,21 @@ public class Action {
 	public Player getPlayer() {
 		return player;
 	}
+	
+	public Action createAction(String moveToMake) {
+		int actionRow = 0;
+		int actionCol = 0;
+		
+		for (int i = 0; i < moveToMake.length(); i++) {
+			char charToCheck = moveToMake.charAt(i);
+			if (Character.isLetter(charToCheck)) {
+				actionRow = (int)charToCheck - 'a';
+			} else {
+				actionCol = charToCheck - '0';
+			}
+		}
+		
+		Action actionToTake = new Action(actionRow, actionCol, Player.OPPONENT);
+		return actionToTake;
+	}
 }
