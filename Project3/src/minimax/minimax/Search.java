@@ -1,5 +1,4 @@
-
-package minimax;
+package minimax.minimax;
 
 import java.util.List;
 import java.util.Random;
@@ -9,26 +8,8 @@ import player.Player;
 public class Search {
 	private final Random rand = new Random();
 	private final int WIN_CONST = 200;
-	
-	public State iterativeSearch(State state) {
-		int depth = 1;
-		State bestState = null;
-		
-		while (true) {
-			bestState = a_b_search(state, depth);
-			
-			if (bestState != null && bestState.getV() > WIN_CONST) {
-				break;
-			}
-			
-			System.out.println(state.toString());
-			depth++;
-		}
 
-		return bestState;
-	}
-
-	public State a_b_search(State state, int depth) {
+	public State getNextState(State state) {
 		if (state.getNumPieces() == 0) {
 			// First turn in game -> Place piece randomly within 2 spaces of the
 			// center cells
@@ -38,78 +19,76 @@ public class Search {
 			state.move(new Action(row, col, Player.COMPUTER));
 			return state;
 		}
+		int best = 0;
 		List<State> successors = state.getSuccessors();
-		int v = maxVal(state, successors, -1000000, 1000000, depth);
-
-		// TODO iterative deepening and randomly select value if enough
-		// successors have a very similar utility value. Try going for depth
-		// instead of breadth
-		for (State nextState : successors) {
-			if (nextState.getV() == v) {
-				Thread.interrupted(); // Clear interrupted flag just in case
-										// it's raised
-				return nextState;
+		for (State successor : successors) {
+			best = iterativeSearch(successor);
+			if (best >= WIN_CONST || Thread.interrupted()) {
+				return successor;
 			}
 		}
-		Thread.interrupted(); // Clear interrupted flag just in case it's raised
 		return null;
+	}
 
+	public int iterativeSearch(State state) {
+		int depth = 1;
+		int best = 0;
+		int alpha = Integer.MIN_VALUE;
+		int beta = Integer.MAX_VALUE;
+		while (true) {
+			best = maxVal(state, alpha, beta, depth);
+			if (best >= WIN_CONST || Thread.interrupted()) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+			depth++;
+		}
+		return best;
 	}
 
 	// Returns a utility value
-	public int maxVal(State state, List<State> successors, int alpha, int beta, int depth) {
+	public int maxVal(State state, int alpha, int beta, int depth) {
 		// Time has run out, return whatever the current state holds
 
 		if (terminalTest(state) || depth == 0) {
 			return state.utility();
 		}
-
-		state.setV(-1000000);
-		int v = state.getV();
-		List<State> nextSuccessors;
+		List<State> successors = state.getSuccessors();
 		for (State nextState : successors) {
-			nextSuccessors = nextState.getSuccessors();
-			v = Math.max(v, minVal(nextState, nextSuccessors, alpha, beta, depth - 1));
+			alpha = Math.max(alpha, minVal(nextState, alpha, beta, depth - 1));
 
 			// Time is out, use whatever value the method is currently at
 			if (Thread.interrupted()) {
 				Thread.currentThread().interrupt();
 				return state.utility();
 			}
-			if (v >= beta) {
-				return v;
+			if (alpha >= beta) {
+				break;
 			}
-			alpha = Math.max(alpha, v);
 		}
-		return v;
-
+		return alpha;
 	}
 
 	// Returns a utility value
-	public int minVal(State state, List<State> successors, int alpha, int beta, int depth) {
+	public int minVal(State state, int alpha, int beta, int depth) {
 
 		if (terminalTest(state) || depth == 0) {
 			return state.utility();
 		}
-
-		state.setV(1000000);
-		int v = state.getV();
-		List<State> nextSuccessors;
+		List<State> successors = state.getSuccessors();
 		for (State nextState : successors) {
-			nextSuccessors = nextState.getSuccessors();
-			v = Math.min(v, maxVal(nextState, nextSuccessors, alpha, beta, depth - 1));
+			beta = Math.min(beta, maxVal(nextState, alpha, beta, depth - 1));
 
 			// Time is out, use whatever value the method is currently at
 			if (Thread.interrupted()) {
 				Thread.currentThread().interrupt();
 				return state.utility();
 			}
-			if (v <= alpha) {
-				return v;
+			if (beta <= alpha) {
+				break;
 			}
-			beta = Math.min(beta, v);
 		}
-		return v;
+		return beta;
 	}
 
 	public boolean terminalTest(State state) {
