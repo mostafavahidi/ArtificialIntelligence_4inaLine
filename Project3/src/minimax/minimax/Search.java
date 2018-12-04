@@ -31,14 +31,12 @@ public class Search {
 		List<State> successors = state.getSuccessors();
 		long searchTime = TIME_LIMIT / successors.size();
 		for (State successor : successors) {
-			if (!stop) {
-				currentScore = iterativeSearch(successor, searchTime);
-			}
+			currentScore = iterativeSearch(successor, searchTime);
 			if (currentScore > best) {
 				best = currentScore;
 				bestState = successor;
 			}
-			if (best >= WIN_CONST) {
+			if (best >= WIN_CONST || stop) {
 				return bestState;
 			}
 		}
