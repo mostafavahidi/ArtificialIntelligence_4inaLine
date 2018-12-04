@@ -1,4 +1,4 @@
-package minimax;
+package minimax.minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,33 +69,32 @@ public class State {
 		final int DIM = N;
 		int topCharsValueWeight = 100;
 		int numCharsLeftValueWeight = 200;
-		
+
 		int[] topNumCharsRowCol = getTopNumCharsRowCol();
 		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
-		
 
-		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1]) - (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
+		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1])
+				- (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
 		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
 
-		
 		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
 		// " + compTopNumCharsCol);
 		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
 		// oppTopNumCharsCol);
-		 
-		
+
 		int utilityVal = (topCharsValueWeight * topCharsValue) + (numCharsLeftValueWeight * numCharsLeftValue);
-		
-//		System.out.println(toString());
-//		System.out.println(utilityVal);
-		
+
+		// System.out.println(toString());
+		// System.out.println(utilityVal);
+
 		return utilityVal; // Returning the utility value otherwise.
 	}
-	
+
 	public int[] getTopNumCharsRowCol() {
-		//int[0] compTopNumCharsRow, int[1] compTopNumCharsCol, int[2] oppTopNumCharsRow, int[3] oppTopNumCharsCol
+		// int[0] compTopNumCharsRow, int[1] compTopNumCharsCol, int[2]
+		// oppTopNumCharsRow, int[3] oppTopNumCharsCol
 		int[] topNumCharsRowCol = new int[4];
-		
+
 		int compTopNumCharsRow = 0;
 		int compTopNumCharsCol = 0;
 
@@ -141,25 +140,27 @@ public class State {
 				oppTopNumCharsCol = oppNumCharsCol;
 			}
 		}
-		
+
 		topNumCharsRowCol[0] = compTopNumCharsRow;
 		topNumCharsRowCol[1] = compTopNumCharsCol;
 		topNumCharsRowCol[2] = oppTopNumCharsRow;
 		topNumCharsRowCol[3] = oppTopNumCharsCol;
-		
+
 		return topNumCharsRowCol;
-		
+
 	}
-	
+
 	public int[] getNumCharsToWin(int[] topNumCharsRowCol) {
 		int[] numCharsToWin = new int[4];
-		
-		numCharsToWin[0] = TO_WIN - topNumCharsRowCol[0];//Comp Row Chars to Win
-		numCharsToWin[1] = TO_WIN - topNumCharsRowCol[1];//Comp Col Chars to Win
-		
-		numCharsToWin[2] = TO_WIN - topNumCharsRowCol[2];//Opp Row Chars to Win
-		numCharsToWin[3] = TO_WIN - topNumCharsRowCol[3];//Opp Col Chars to Win
-		
+
+		numCharsToWin[0] = TO_WIN - topNumCharsRowCol[0];// Comp Row Chars to
+															// Win
+		numCharsToWin[1] = TO_WIN - topNumCharsRowCol[1];// Comp Col Chars to
+															// Win
+
+		numCharsToWin[2] = TO_WIN - topNumCharsRowCol[2];// Opp Row Chars to Win
+		numCharsToWin[3] = TO_WIN - topNumCharsRowCol[3];// Opp Col Chars to Win
+
 		return numCharsToWin;
 	}
 
