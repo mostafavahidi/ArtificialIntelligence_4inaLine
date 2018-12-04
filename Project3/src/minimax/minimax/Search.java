@@ -2,16 +2,29 @@
 package minimax.minimax;
 
 import java.util.List;
+import java.util.Random;
+
+import player.Player;
 
 public class Search {
+	private final Random rand = new Random();
 
 	public State a_b_search(State state) {
+		if (state.getNumPieces() == 0) {
+			// First turn in game -> Place piece randomly within 2 spaces of the
+			// center cells
+			int middle = State.N / 2;
+			int row = rand.ints(middle - 2, middle + 2).findFirst().getAsInt();
+			int col = rand.ints(middle - 2, middle + 2).findFirst().getAsInt();
+			state.move(new Action(row, col, Player.COMPUTER));
+			return state;
+		}
 		List<State> successors = state.getSuccessors();
 		int v = maxVal(state, successors, -1000000, 1000000);
-		// Todo: return the action in Successors(state) with value v
 
-		State currentState = successors.get(0);
-
+		// TODO iterative deepening and randomly select value if enough
+		// successors have a very similar utility value. Try going for depth
+		// instead of breadth
 		for (State nextState : successors) {
 			if (nextState.getV() == v) {
 				return nextState;
@@ -23,6 +36,7 @@ public class Search {
 
 	// Returns a utility value
 	public int maxVal(State state, List<State> successors, int alpha, int beta) {
+		// Time has run out, return whatever the current state holds
 
 		if (terminalTest(state)) {
 			return state.utility();
@@ -34,6 +48,12 @@ public class Search {
 		for (State nextState : successors) {
 			nextSuccessors = nextState.getSuccessors();
 			v = Math.max(v, minVal(nextState, nextSuccessors, alpha, beta));
+
+			// Time is out, use whatever value the method is currently at
+			if (Thread.interrupted()) {
+				Thread.currentThread().interrupt();
+				return v;
+			}
 			if (v >= beta) {
 				return v;
 			}
@@ -56,6 +76,12 @@ public class Search {
 		for (State nextState : successors) {
 			nextSuccessors = nextState.getSuccessors();
 			v = Math.min(v, maxVal(nextState, nextSuccessors, alpha, beta));
+
+			// Time is out, use whatever value the method is currently at
+			if (Thread.interrupted()) {
+				Thread.currentThread().interrupt();
+				return v;
+			}
 			if (v <= alpha) {
 				return v;
 			}

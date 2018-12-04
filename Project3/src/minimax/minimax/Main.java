@@ -7,8 +7,10 @@ import java.util.Scanner;
 public class Main {
 	private static final Scanner scanner = new Scanner(System.in);
 	private static final List<Action> ACTIONS = new ArrayList<>();
+	private static int currentAction;
 
 	public static void main(String[] args) {
+		currentAction = 0;
 		Search searcher = new Search();
 		State state = new State();
 		System.out.print("Who goes first, player or opponent? [p/o]: ");
@@ -25,20 +27,29 @@ public class Main {
 	private static void run(State state, Search searcher, boolean aiFirst) {
 		Action opponentMove = null;
 		Action playerAction = null;
-		Timer timer;
+		Timer timer = new Timer(Thread.currentThread());
+		Thread timerThread;
 		while (!searcher.terminalTest(state)) {
-			// Start the 25 second timer
-			
 			if (!aiFirst) {
 				opponentMove = Action.createAction(getOpponentMove());
 				ACTIONS.add(opponentMove);
 				state.move(opponentMove);
-				state = searcher.a_b_search(state);
+
+				// Start the 25 second timer
+				timerThread = new Thread(timer);
+				timerThread.start(); // Start the timer
+				state = searcher.a_b_search(state); // Search
+				timerThread.interrupt(); // Cancel the timer
 				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
 			}
 			if (aiFirst) {
-				state = searcher.a_b_search(state);
+
+				// Start the 25 second timer
+				timerThread = new Thread(timer);
+				timerThread.start(); // Start the timer
+				state = searcher.a_b_search(state); // Search
+				timerThread.interrupt(); // Cancel the timer
 				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
 				opponentMove = Action.createAction(getOpponentMove());
@@ -58,24 +69,29 @@ public class Main {
 		if (aiFirst) {
 			System.out.println("Player vs. Opponent");
 		} else {
-			System.out.print("Opponent vs. Player");
+			System.out.println("Opponent vs. Player");
 		}
 		char[][] board = state.getBoard();
 		char currentRow = 65;
-		int currentAction = 0;
+		final char DEFAULT = '\u0000';
 		for (int i = 0; i < State.N; i++, currentRow++) {
-			System.out.println(currentRow);
+			System.out.print(currentRow);
 			for (int j = 0; j < State.N; j++) {
-				System.out.println(board[i][j]);
+				if (board[i][j] == DEFAULT) {
+					System.out.print("-");
+				} else {
+					System.out.print(board[i][j]);
+				}
 			}
-			System.out.print(TAB);
-			System.out.print(ACTIONS.get(currentAction).toString());
-			currentAction++;
-			System.out.print(TAB);
-			System.out.println(ACTIONS.get(currentAction).toString());
-			currentAction++;
+			for (int j = 0; j < 2 && currentAction < ACTIONS.size(); j++) {
+				System.out.print(TAB);
+				System.out.print(ACTIONS.get(currentAction).toString());
+				currentAction++;
+			}
+
+			System.out.println();
 		}
-		System.out.print("Player's move is: ");
+		System.out.println("Player's move is: " + ACTIONS.get(ACTIONS.size() - 1).toString());
 	}
 
 	private static String getOpponentMove() {

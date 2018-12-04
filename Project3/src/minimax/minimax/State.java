@@ -32,11 +32,9 @@ public class State {
 			}
 		}
 		if (currentState.getMostRecentAction().getPlayer() == Player.COMPUTER) {
-			newBoard[row][col] = Player.OPPONENT.value();
-			newState.setMostRecentAction(new Action(row, col, Player.OPPONENT));
+			newState.move(new Action(row, col, Player.OPPONENT));
 		} else if (currentState.getMostRecentAction().getPlayer() == Player.OPPONENT) {
-			newBoard[row][col] = Player.COMPUTER.value();
-			newState.setMostRecentAction(new Action(row, col, Player.COMPUTER));
+			newState.move(new Action(row, col, Player.COMPUTER));
 		}
 
 		return newState;
@@ -83,7 +81,7 @@ public class State {
 				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsRow++;
 				}
-				if (getBoard()[r][c] == Player.OPPONENT.value()){
+				if (getBoard()[r][c] == Player.OPPONENT.value()) {
 					oppTopNumCharsRow++;
 				}
 			}
@@ -103,7 +101,7 @@ public class State {
 				if (getBoard()[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsCol++;
 				}
-				if (getBoard()[r][c] == Player.OPPONENT.value()){
+				if (getBoard()[r][c] == Player.OPPONENT.value()) {
 					oppTopNumCharsCol++;
 				}
 			}
@@ -117,10 +115,12 @@ public class State {
 
 		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
 
-		System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col: " + compTopNumCharsCol);
-		System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " + oppTopNumCharsCol);
-		System.out.println(utilityVal);
-		return utilityVal; //Returning the utility value otherwise.
+		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
+		// " + compTopNumCharsCol);
+		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
+		// oppTopNumCharsCol);
+		// System.out.println(utilityVal);
+		return utilityVal; // Returning the utility value otherwise.
 	}
 
 	public void setV(int newV) {
@@ -133,6 +133,10 @@ public class State {
 
 	public char[][] getBoard() {
 		return this.board;
+	}
+
+	public int getNumPieces() {
+		return numPieces;
 	}
 
 	public Action getMostRecentAction() {

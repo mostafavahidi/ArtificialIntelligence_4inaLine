@@ -24,7 +24,7 @@ public class Action {
 	public Player getPlayer() {
 		return player;
 	}
-	
+
 	public static Action createAction(String moveToMake) {
 		int actionRow = 0;
 		int actionCol = 0;
@@ -44,6 +44,6 @@ public class Action {
 
 	@Override
 	public String toString() {
-		return String.valueOf((char) row + 'a') + String.valueOf(col + '0');
+		return String.valueOf((char) (row + 'a')) + String.valueOf((char) (col + '1'));
 	}
 }
