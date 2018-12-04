@@ -7,6 +7,7 @@ import player.Player;
 
 public class State {
 	public static final int N = 8;
+	public static final int TO_WIN = 4;
 	private int v = 0;
 	private char[][] board;
 	private int numPieces = 0;
@@ -66,7 +67,30 @@ public class State {
 		}
 
 		final int DIM = N;
+		int topCharsValueWeight = 100;
+		int numCharsLeftValueWeight = 200;
+		
+		int[] topNumCharsRowCol = getTopNumCharsRowCol(DIM);
+		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
+		
 
+		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1]) - (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
+		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
+
+		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
+		// " + compTopNumCharsCol);
+		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
+		// oppTopNumCharsCol);
+		// System.out.println(utilityVal);
+		
+		int utilityVal = (topCharsValueWeight * topCharsValue) + (numCharsLeftValueWeight * numCharsLeftValue);
+		return utilityVal; // Returning the utility value otherwise.
+	}
+	
+	public int[] getTopNumCharsRowCol(int DIM) {
+		//int[0] compTopNumCharsRow, int[1] compTopNumCharsCol, int[2] oppTopNumCharsRow, int[3] oppTopNumCharsCol
+		int[] topNumCharsRowCol = new int[4];
+		
 		int compTopNumCharsRow = 0;
 		int compTopNumCharsCol = 0;
 
@@ -78,10 +102,10 @@ public class State {
 			int compNumCharsRow = 0;
 			int oppNumCharsRow = 0;
 			for (int c = 0; c < DIM; c++) {
-				if (getBoard()[r][c] == Player.COMPUTER.value()) {
+				if (board[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsRow++;
 				}
-				if (getBoard()[r][c] == Player.OPPONENT.value()) {
+				if (board[r][c] == Player.OPPONENT.value()) {
 					oppTopNumCharsRow++;
 				}
 			}
@@ -98,10 +122,10 @@ public class State {
 			int compNumCharsCol = 0;
 			int oppNumCharsCol = 0;
 			for (int r = 0; r < DIM; r++) {
-				if (getBoard()[r][c] == Player.COMPUTER.value()) {
+				if (board[r][c] == Player.COMPUTER.value()) {
 					compTopNumCharsCol++;
 				}
-				if (getBoard()[r][c] == Player.OPPONENT.value()) {
+				if (board[r][c] == Player.OPPONENT.value()) {
 					oppTopNumCharsCol++;
 				}
 			}
@@ -112,15 +136,26 @@ public class State {
 				oppTopNumCharsCol = oppNumCharsCol;
 			}
 		}
-
-		int utilityVal = (compTopNumCharsRow + compTopNumCharsCol) - (oppTopNumCharsRow + oppTopNumCharsCol);
-
-		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
-		// " + compTopNumCharsCol);
-		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
-		// oppTopNumCharsCol);
-		// System.out.println(utilityVal);
-		return utilityVal; // Returning the utility value otherwise.
+		
+		topNumCharsRowCol[0] = compTopNumCharsRow;
+		topNumCharsRowCol[1] = compTopNumCharsCol;
+		topNumCharsRowCol[2] = oppTopNumCharsRow;
+		topNumCharsRowCol[3] = oppTopNumCharsCol;
+		
+		return topNumCharsRowCol;
+		
+	}
+	
+	public int[] getNumCharsToWin(int[] topNumCharsRowCol) {
+		int[] numCharsToWin = new int[4];
+		
+		numCharsToWin[0] = TO_WIN - topNumCharsRowCol[0];//Comp Row Chars to Win
+		numCharsToWin[1] = TO_WIN - topNumCharsRowCol[1];//Comp Col Chars to Win
+		
+		numCharsToWin[2] = TO_WIN - topNumCharsRowCol[2];//Opp Row Chars to Win
+		numCharsToWin[3] = TO_WIN - topNumCharsRowCol[3];//Opp Col Chars to Win
+		
+		return numCharsToWin;
 	}
 
 	public void setV(int newV) {
