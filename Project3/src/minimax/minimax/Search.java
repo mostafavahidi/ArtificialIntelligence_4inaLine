@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.List;
 import java.util.Random;
@@ -41,7 +41,9 @@ public class Search {
 				Thread.currentThread().interrupt();
 				break;
 			}
-			depth++;
+			if (depth < 4) {
+				depth++;
+			}
 		}
 		return best;
 	}

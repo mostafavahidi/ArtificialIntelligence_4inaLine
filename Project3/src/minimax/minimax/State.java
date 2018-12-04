@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,24 +70,29 @@ public class State {
 		int topCharsValueWeight = 100;
 		int numCharsLeftValueWeight = 200;
 		
-		int[] topNumCharsRowCol = getTopNumCharsRowCol(DIM);
+		int[] topNumCharsRowCol = getTopNumCharsRowCol();
 		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
 		
 
 		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1]) - (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
 		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
 
+		
 		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
 		// " + compTopNumCharsCol);
 		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
 		// oppTopNumCharsCol);
-		// System.out.println(utilityVal);
+		 
 		
 		int utilityVal = (topCharsValueWeight * topCharsValue) + (numCharsLeftValueWeight * numCharsLeftValue);
+		
+//		System.out.println(toString());
+//		System.out.println(utilityVal);
+		
 		return utilityVal; // Returning the utility value otherwise.
 	}
 	
-	public int[] getTopNumCharsRowCol(int DIM) {
+	public int[] getTopNumCharsRowCol() {
 		//int[0] compTopNumCharsRow, int[1] compTopNumCharsCol, int[2] oppTopNumCharsRow, int[3] oppTopNumCharsCol
 		int[] topNumCharsRowCol = new int[4];
 		
@@ -98,15 +103,15 @@ public class State {
 		int oppTopNumCharsCol = 0;
 
 		// Counting top num of chars for all rows for player and opponent.
-		for (int r = 0; r < DIM; r++) {
+		for (int r = 0; r < N; r++) {
 			int compNumCharsRow = 0;
 			int oppNumCharsRow = 0;
-			for (int c = 0; c < DIM; c++) {
-				if (board[r][c] == Player.COMPUTER.value()) {
-					compTopNumCharsRow++;
+			for (int c = 0; c < N; c++) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
+					compNumCharsRow++;
 				}
-				if (board[r][c] == Player.OPPONENT.value()) {
-					oppTopNumCharsRow++;
+				if (getBoard()[r][c] == Player.OPPONENT.value()) {
+					oppNumCharsRow++;
 				}
 			}
 			if (compNumCharsRow > compTopNumCharsRow) {
@@ -118,15 +123,15 @@ public class State {
 		}
 
 		// Counting top num of chars for all cols for player and opponent.
-		for (int c = 0; c < DIM; c++) {
+		for (int c = 0; c < N; c++) {
 			int compNumCharsCol = 0;
 			int oppNumCharsCol = 0;
-			for (int r = 0; r < DIM; r++) {
-				if (board[r][c] == Player.COMPUTER.value()) {
-					compTopNumCharsCol++;
+			for (int r = 0; r < N; r++) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
+					compNumCharsCol++;
 				}
-				if (board[r][c] == Player.OPPONENT.value()) {
-					oppTopNumCharsCol++;
+				if (getBoard()[r][c] == Player.OPPONENT.value()) {
+					oppNumCharsCol++;
 				}
 			}
 			if (compNumCharsCol > compTopNumCharsCol) {
