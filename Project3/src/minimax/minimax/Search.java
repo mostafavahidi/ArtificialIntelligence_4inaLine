@@ -1,6 +1,5 @@
 package minimax.minimax;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -8,9 +7,10 @@ import player.Player;
 
 public class Search {
 	private final Random rand = new Random();
-	private final int WIN_CONST = 150;
-	private final long TIME_LIMIT = 5000;
+	private final int WIN_CONST = 200;
+	private final long TIME_LIMIT = 25000;
 	private long startTime;
+	private boolean stop;
 
 	public State getNextState(State state) {
 		if (state.getNumPieces() == 0) {
@@ -22,19 +22,24 @@ public class Search {
 			state.move(new Action(row, col, Player.COMPUTER));
 			return state;
 		}
+		// Clear interrupted flag in case it's still set
+		Thread.interrupted();
+		stop = false;
 		State bestState = null;
 		int best = Integer.MIN_VALUE;
 		int currentScore = 0;
 		List<State> successors = state.getSuccessors();
 		long searchTime = TIME_LIMIT / successors.size();
 		for (State successor : successors) {
-			currentScore = iterativeSearch(successor, searchTime);
-			if (best >= WIN_CONST || Thread.interrupted()) {
-				return successor;
+			if (!stop) {
+				currentScore = iterativeSearch(successor, searchTime);
 			}
 			if (currentScore > best) {
 				best = currentScore;
 				bestState = successor;
+			}
+			if (best >= WIN_CONST) {
+				return bestState;
 			}
 		}
 		return bestState;
@@ -54,13 +59,12 @@ public class Search {
 			}
 			best = maxVal(state, alpha, beta, depth, endTime - current);
 			// System.out.println(best);
-			if (best >= WIN_CONST || Thread.interrupted()) {
-				Thread.currentThread().interrupt();
+			if (best >= WIN_CONST || stop) {
 				break;
 			}
-			if (depth < 2) {
-				depth++;
-			}
+
+			depth++;
+
 		}
 		return best;
 	}
@@ -73,13 +77,14 @@ public class Search {
 		if (terminalTest(state) || depth == 0 || elapsed >= timeLimit) {
 			return state.utility();
 		}
+		// System.out.println(depth);
 		List<State> successors = state.getSuccessors();
 		for (State nextState : successors) {
 			alpha = Math.max(alpha, minVal(nextState, alpha, beta, depth - 1, timeLimit));
 
 			// Time is out, use whatever value the method is currently at
 			if (Thread.interrupted()) {
-				Thread.currentThread().interrupt();
+				stop = true;
 				return state.utility();
 			}
 			if (alpha >= beta) {
@@ -96,13 +101,14 @@ public class Search {
 		if (terminalTest(state) || depth == 0 || elapsed >= timeLimit) {
 			return state.utility();
 		}
+		// System.out.println(depth);
 		List<State> successors = state.getSuccessors();
 		for (State nextState : successors) {
 			beta = Math.min(beta, maxVal(nextState, alpha, beta, depth - 1, timeLimit));
 
 			// Time is out, use whatever value the method is currently at
 			if (Thread.interrupted()) {
-				Thread.currentThread().interrupt();
+				stop = true;
 				return state.utility();
 			}
 			if (beta <= alpha) {
