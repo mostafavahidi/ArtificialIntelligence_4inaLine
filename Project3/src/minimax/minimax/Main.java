@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class Main {
 				// Start the 25 second timer
 				timerThread = new Thread(timer);
 				timerThread.start(); // Start the timer
-				state = searcher.a_b_search(state); // Search
+				state = searcher.iterativeSearch(state); // Search
 				timerThread.interrupt(); // Cancel the timer
 				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
@@ -48,7 +48,7 @@ public class Main {
 				// Start the 25 second timer
 				timerThread = new Thread(timer);
 				timerThread.start(); // Start the timer
-				state = searcher.a_b_search(state); // Search
+				state = searcher.iterativeSearch(state); // Search
 				timerThread.interrupt(); // Cancel the timer
 				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);

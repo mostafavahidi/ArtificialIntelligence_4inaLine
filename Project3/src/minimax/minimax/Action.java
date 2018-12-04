@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import player.Player;
 
@@ -34,7 +34,7 @@ public class Action {
 			if (Character.isLetter(charToCheck)) {
 				actionRow = (int) charToCheck - 'a';
 			} else {
-				actionCol = charToCheck - '0';
+				actionCol = charToCheck - '1';
 			}
 		}
 
