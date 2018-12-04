@@ -27,9 +27,12 @@ public class Search {
 		// instead of breadth
 		for (State nextState : successors) {
 			if (nextState.getV() == v) {
+				Thread.interrupted(); // Clear interrupted flag just in case
+										// it's raised
 				return nextState;
 			}
 		}
+		Thread.interrupted(); // Clear interrupted flag just in case it's raised
 		return null;
 
 	}
