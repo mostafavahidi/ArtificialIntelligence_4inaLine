@@ -1,11 +1,16 @@
 package minimax.minimax;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import player.Player;
 
 public class State {
+	private enum Direction {
+		UP, DOWN, LEFT, RIGHT
+	}
+
 	public static final int N = 8;
 	public static final int TO_WIN = 4;
 	private int v = 0;
@@ -59,6 +64,42 @@ public class State {
 		return successors;
 	}
 
+	private int longestChain() {
+		int longest = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				longest = Math.max(longest, lengthFromCell(i, j));
+			}
+		}
+		return longest;
+	}
+
+	private int lengthFromCell(int i, int j) {
+		return Math.max(longestChainWithDirection(i, j, Direction.UP) + longestChainWithDirection(i, j, Direction.DOWN),
+				longestChainWithDirection(i, j, Direction.LEFT) + longestChainWithDirection(i, j, Direction.RIGHT));
+	}
+
+	private int longestChainWithDirection(int i, int j, Direction dir) {
+		int length = 0;
+		if (dir == Direction.UP && i == 0 || dir == Direction.DOWN && i == N - 1 || dir == Direction.LEFT && j == 0
+				|| dir == Direction.RIGHT && j == N - 1) {
+			return length;
+		}
+		while (i >= 0 && i < N && j >= 0 && j < N && board[i][j] == Player.COMPUTER.value()) {
+			if (dir == Direction.UP) {
+				i--;
+			} else if (dir == Direction.DOWN) {
+				i++;
+			} else if (dir == Direction.LEFT) {
+				j--;
+			} else if (dir == Direction.RIGHT) {
+				j++;
+			}
+			length++;
+		}
+		return length - 1;
+	}
+
 	public int utility() {
 
 		if (numPieces == N * N) {
@@ -66,102 +107,17 @@ public class State {
 						// draw.
 		}
 
-		final int DIM = N;
-		int topCharsValueWeight = 100;
-		int numCharsLeftValueWeight = 200;
-
-		int[] topNumCharsRowCol = getTopNumCharsRowCol();
-		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
-
-		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1])
-				- (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
-		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
-
-		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
-		// " + compTopNumCharsCol);
-		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
-		// oppTopNumCharsCol);
-
-		int utilityVal = (topCharsValueWeight * topCharsValue) + (numCharsLeftValueWeight * numCharsLeftValue);
-
-		// System.out.println(toString());
-		// System.out.println(utilityVal);
-
+		int utilityVal = longestChain() * 10;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (board[i][j] == Player.COMPUTER.value()) {
+					utilityVal += Math.abs(3 - j);
+				} else if (board[i][j] == Player.OPPONENT.value()) {
+					utilityVal -= Math.abs(3 - j);
+				}
+			}
+		}
 		return utilityVal; // Returning the utility value otherwise.
-	}
-
-	public int[] getTopNumCharsRowCol() {
-		// int[0] compTopNumCharsRow, int[1] compTopNumCharsCol, int[2]
-		// oppTopNumCharsRow, int[3] oppTopNumCharsCol
-		int[] topNumCharsRowCol = new int[4];
-
-		int compTopNumCharsRow = 0;
-		int compTopNumCharsCol = 0;
-
-		int oppTopNumCharsRow = 0;
-		int oppTopNumCharsCol = 0;
-
-		// Counting top num of chars for all rows for player and opponent.
-		for (int r = 0; r < N; r++) {
-			int compNumCharsRow = 0;
-			int oppNumCharsRow = 0;
-			for (int c = 0; c < N; c++) {
-				if (getBoard()[r][c] == Player.COMPUTER.value()) {
-					compNumCharsRow++;
-				}
-				if (getBoard()[r][c] == Player.OPPONENT.value()) {
-					oppNumCharsRow++;
-				}
-			}
-			if (compNumCharsRow > compTopNumCharsRow) {
-				compTopNumCharsRow = compNumCharsRow;
-			}
-			if (oppNumCharsRow > oppTopNumCharsRow) {
-				oppTopNumCharsRow = oppNumCharsRow;
-			}
-		}
-
-		// Counting top num of chars for all cols for player and opponent.
-		for (int c = 0; c < N; c++) {
-			int compNumCharsCol = 0;
-			int oppNumCharsCol = 0;
-			for (int r = 0; r < N; r++) {
-				if (getBoard()[r][c] == Player.COMPUTER.value()) {
-					compNumCharsCol++;
-				}
-				if (getBoard()[r][c] == Player.OPPONENT.value()) {
-					oppNumCharsCol++;
-				}
-			}
-			if (compNumCharsCol > compTopNumCharsCol) {
-				compTopNumCharsCol = compNumCharsCol;
-			}
-			if (oppNumCharsCol > oppTopNumCharsCol) {
-				oppTopNumCharsCol = oppNumCharsCol;
-			}
-		}
-
-		topNumCharsRowCol[0] = compTopNumCharsRow;
-		topNumCharsRowCol[1] = compTopNumCharsCol;
-		topNumCharsRowCol[2] = oppTopNumCharsRow;
-		topNumCharsRowCol[3] = oppTopNumCharsCol;
-
-		return topNumCharsRowCol;
-
-	}
-
-	public int[] getNumCharsToWin(int[] topNumCharsRowCol) {
-		int[] numCharsToWin = new int[4];
-
-		numCharsToWin[0] = TO_WIN - topNumCharsRowCol[0];// Comp Row Chars to
-															// Win
-		numCharsToWin[1] = TO_WIN - topNumCharsRowCol[1];// Comp Col Chars to
-															// Win
-
-		numCharsToWin[2] = TO_WIN - topNumCharsRowCol[2];// Opp Row Chars to Win
-		numCharsToWin[3] = TO_WIN - topNumCharsRowCol[3];// Opp Col Chars to Win
-
-		return numCharsToWin;
 	}
 
 	public void setV(int newV) {
