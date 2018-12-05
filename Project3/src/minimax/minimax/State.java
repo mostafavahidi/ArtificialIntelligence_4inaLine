@@ -1,6 +1,7 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import player.Player;
@@ -8,7 +9,10 @@ import player.Player;
 public class State {
 	public static final int N = 8;
 	public static final int TO_WIN = 4;
+	private static final char compChar = 'c';
+	private static final int oppChar = 'o';
 	private int v = 0;
+	private static char[][] winSequence;
 	private char[][] board;
 	private int numPieces = 0;
 	private Action mostRecentAction;
@@ -21,6 +25,23 @@ public class State {
 		board[action.getRow()][action.getCol()] = action.getPlayer().value();
 		mostRecentAction = action;
 		numPieces++;
+	}
+	
+	private static void createWinSequence() {
+		winSequence = new char[2 + 1][TO_WIN];
+		
+		for (int i = 1; i <= 2; i++) {
+			for (int j = 0; j < TO_WIN; j++) {
+				winSequence[i][j] = (char)i;
+			}
+		}
+	}
+	
+	//
+	// inBounds() returns true if the given x and y coordinates are within the bounds of the board
+	//
+	private static boolean inBounds(int x, int y) {
+		return ((0 <= x) && (x < N) && (0 <= y) && (y < N)) ? true : false;
 	}
 
 	private State createState(int row, int col, State currentState) {
@@ -67,25 +88,39 @@ public class State {
 		}
 
 		final int DIM = N;
-		int topCharsValueWeight = 100;
-		int numCharsLeftValueWeight = 200;
+		int topCharsValueWeight = 300;
+		int numCharsLeftValueWeight = 100;
+		int evalWinsValueWeight = 1000;
 
 		int[] topNumCharsRowCol = getTopNumCharsRowCol();
 		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
 
 		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1])
 				- (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
+		
 		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
+		
+		int evalWinsValue = 0;
+		createWinSequence();
+//		System.out.println(Arrays.deepToString(winSequence));
+		if (getMostRecentAction().getPlayer() == Player.COMPUTER) {
+//			System.out.println("COMPUTER eval WIN triggered");
+			evalWinsValue = evalWins(true);
+		} else if (getMostRecentAction().getPlayer() == Player.OPPONENT) {
+//			System.out.println("OPPONENT eval WIN triggered");
+			evalWinsValue = evalWins(false);
+		}
+		System.out.println("evalWinsValue!!!!: " + evalWinsValue);
 
 		// System.out.println("comp Row: " + compTopNumCharsRow + "\n comp Col:
 		// " + compTopNumCharsCol);
 		// System.out.println("opp Row: " + oppTopNumCharsRow + "\n opp Col: " +
 		// oppTopNumCharsCol);
 
-		int utilityVal = (topCharsValueWeight * topCharsValue) + (numCharsLeftValueWeight * numCharsLeftValue);
+		int utilityVal = (topCharsValueWeight * topCharsValue) + (numCharsLeftValueWeight * numCharsLeftValue) + (evalWinsValueWeight * evalWinsValue);
 
 		// System.out.println(toString());
-		// System.out.println(utilityVal);
+//		 System.out.println(utilityVal);
 
 		return utilityVal; // Returning the utility value otherwise.
 	}
@@ -162,6 +197,79 @@ public class State {
 		numCharsToWin[3] = TO_WIN - topNumCharsRowCol[3];// Opp Col Chars to Win
 
 		return numCharsToWin;
+	}
+	
+	//
+	// evalWins() counts the number of win sequences (k in a row) on the game board for the given player
+	//
+	private int evalWins(boolean isAi) {
+		int player = (isAi) ? 1 : 2;
+		
+		return countPositionForward(winSequence[player]);
+	}
+	
+	//
+	// countPositionForward() scans the game board for the given sequence, and returns the number of occurences
+	//
+	private int countPositionForward(char[] sequence) {
+		int sequenceCount = 0;
+		
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (matchPosition(i, j, sequence, 1)) {
+					sequenceCount++;
+				}
+			}
+		}
+		
+		return sequenceCount;
+	}
+	
+	//
+	// matchPosition() scans the game board for a sequence eminating from the (x, y) position, looking
+	// in a direction determined by the deltaX and deltaY parameters, deltaS determines whether to
+	// reverse the sequence
+	//
+	private boolean match(int x , int y, char[] sequence, int deltaX, int deltaY, int deltaS) {
+		int s = (deltaS > 0) ? 0 : sequence.length - 1;
+		
+		if (inBounds(x + deltaX * (sequence.length - 1), y + deltaY * (sequence.length - 1))) {
+			for (int i = 0; i < sequence.length; i++) {
+				if (board[x][y] != sequence[s]) {
+					return false;
+				}
+			
+				x += deltaX;
+				y += deltaY;
+				s += deltaS;
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	//
+	// matchPosition() scans the game board for a sequence eminating from the (x, y) position, direction
+	// specifies whether the sequence should be reversed
+	//
+	private boolean matchPosition(int x, int y, char[] sequence, int direction) {		
+		//
+		// Look horizontally right
+		//
+		if (match(x, y, sequence, 1, 0, direction)) {
+			return true;
+		}
+		
+		//
+		// Look vertically up
+		//
+		if (match(x, y, sequence, 0, 1, direction)) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	public void setV(int newV) {

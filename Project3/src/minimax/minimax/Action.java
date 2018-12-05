@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import player.Player;
 

@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.List;
 import java.util.Random;
@@ -8,7 +8,7 @@ import player.Player;
 public class Search {
 	private final Random rand = new Random();
 	private final int WIN_CONST = 200;
-	private final long TIME_LIMIT = 25000;
+	private final long TIME_LIMIT = 10000;
 	private long startTime;
 	private boolean stop;
 
