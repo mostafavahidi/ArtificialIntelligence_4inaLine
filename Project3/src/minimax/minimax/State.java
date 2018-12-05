@@ -92,7 +92,8 @@ public class State {
 				j--;
 			} else if (dir == Direction.RIGHT) {
 				j++;
-			}
+			} // Check if the chain is capable of being completed. If not, don't
+				// increment length
 			length++;
 		}
 		return length - 1;
