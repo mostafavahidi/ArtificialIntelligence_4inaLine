@@ -29,7 +29,7 @@ public class Main {
 		Action playerAction = null;
 		Timer timer = new Timer(Thread.currentThread());
 		Thread timerThread;
-		while (!searcher.terminalTest(state)) {
+		while (true) {
 			if (!aiFirst) {
 				opponentMove = Action.createAction(getOpponentMove());
 				ACTIONS.add(opponentMove);
@@ -42,6 +42,11 @@ public class Main {
 				timerThread.interrupt(); // Cancel the timer
 				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
+				// If terminal state, declare it and exit
+				if (searcher.terminalTest(state)) {
+					System.out.println("Opponent has won!");
+					System.exit(0);
+				}
 			}
 			if (aiFirst) {
 
@@ -52,6 +57,11 @@ public class Main {
 				timerThread.interrupt(); // Cancel the timer
 				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
+				// If terminal state, declare it and exit
+				if (searcher.terminalTest(state)) {
+					System.out.println("Player has won!");
+					System.exit(0);
+				}
 				opponentMove = Action.createAction(getOpponentMove());
 				state.move(opponentMove);
 				ACTIONS.add(opponentMove);
@@ -71,6 +81,7 @@ public class Main {
 		} else {
 			System.out.println("Opponent vs. Player");
 		}
+		currentAction = 0;
 		char[][] board = state.getBoard();
 		char currentRow = 65;
 		final char DEFAULT = '\u0000';
@@ -87,6 +98,21 @@ public class Main {
 				System.out.print(TAB);
 				System.out.print(ACTIONS.get(currentAction).toString());
 				currentAction++;
+				if (i == State.N - 1 && currentAction < ACTIONS.size() - 1) {
+					for (; currentAction < ACTIONS.size(); currentAction++) {
+						if (currentAction % 2 != 0) {
+							System.out.print(TAB);
+						} else {
+							System.out.print("\n              ");
+						}
+						System.out.print(ACTIONS.get(currentAction).toString());
+						// if (aiFirst && currentAction < ACTIONS.size()) {
+						// System.out.println(ACTIONS.get(currentAction).toString());
+						// currentAction++;
+						// }
+
+					}
+				}
 			}
 
 			System.out.println();
