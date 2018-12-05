@@ -3,7 +3,6 @@ package minimax.minimax;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import player.Player;
 
 public class State {
@@ -12,8 +11,6 @@ public class State {
 	}
 
 	public static final int N = 8;
-	public static final int TO_WIN = 4;
-	private int v = 0;
 	private char[][] board;
 	private int numPieces = 0;
 	private Action mostRecentAction;
@@ -61,6 +58,7 @@ public class State {
 				}
 			}
 		}
+		Collections.shuffle(successors);
 		return successors;
 	}
 
@@ -106,7 +104,7 @@ public class State {
 			return 0; // Returning 0 if the board is filled up and there is a
 						// draw.
 		}
-
+		// Make the longest chain weigh more than the following computations
 		int utilityVal = longestChain() * 10;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -117,15 +115,8 @@ public class State {
 				}
 			}
 		}
+		// System.out.println(utilityVal);
 		return utilityVal; // Returning the utility value otherwise.
-	}
-
-	public void setV(int newV) {
-		this.v = newV;
-	}
-
-	public int getV() {
-		return this.v;
 	}
 
 	public char[][] getBoard() {
