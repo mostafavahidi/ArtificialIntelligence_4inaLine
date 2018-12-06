@@ -11,6 +11,7 @@ public class State {
 	}
 
 	public static final int N = 8;
+	public static final int TO_WIN = 4;
 	private char[][] board;
 	private int numPieces = 0;
 	private Action mostRecentAction;
@@ -159,6 +160,75 @@ public class State {
 		}
 		return false;
 	}
+	
+	public int[] getTopNumCharsRowCol() {
+		//int[0] compTopNumCharsRow, int[1] compTopNumCharsCol, int[2] oppTopNumCharsRow, int[3] oppTopNumCharsCol
+		int[] topNumCharsRowCol = new int[4];
+		
+ 		int compTopNumCharsRow = 0;
+ 		int compTopNumCharsCol = 0;
+ 
+ 		int oppTopNumCharsRow = 0;
+		int oppTopNumCharsCol = 0;
+ 		// Counting top num of chars for all rows for player and opponent.
+		for (int r = 0; r < N; r++) {
+			int compNumCharsRow = 0;
+			int oppNumCharsRow = 0;
+			for (int c = 0; c < N; c++) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
+					compNumCharsRow++;
+				}
+				if (getBoard()[r][c] == Player.OPPONENT.value()) {
+					oppNumCharsRow++;
+				}
+			}
+			if (compNumCharsRow > compTopNumCharsRow) {
+ 				compTopNumCharsRow = compNumCharsRow;
+ 			}
+ 			if (oppNumCharsRow > oppTopNumCharsRow) {
+ 				oppTopNumCharsRow = oppNumCharsRow;
+ 			}
+		}
+ 		// Counting top num of chars for all cols for player and opponent.
+		for (int c = 0; c < N; c++) {
+			int compNumCharsCol = 0;
+			int oppNumCharsCol = 0;
+			for (int r = 0; r < N; r++) {
+				if (getBoard()[r][c] == Player.COMPUTER.value()) {
+					compNumCharsCol++;
+				}
+				if (getBoard()[r][c] == Player.OPPONENT.value()) {
+					oppNumCharsCol++;
+				}
+			}
+			if (compNumCharsCol > compTopNumCharsCol) {
+ 				compTopNumCharsCol = compNumCharsCol;
+ 			}
+ 			if (oppNumCharsCol > oppTopNumCharsCol) {
+ 				oppTopNumCharsCol = oppNumCharsCol;
+ 			}
+ 		}
+ 		
+ 		topNumCharsRowCol[0] = compTopNumCharsRow;
+ 		topNumCharsRowCol[1] = compTopNumCharsCol;
+ 		topNumCharsRowCol[2] = oppTopNumCharsRow;
+ 		topNumCharsRowCol[3] = oppTopNumCharsCol;
+ 		
+ 		return topNumCharsRowCol;
+ 		
+ 	}
+	
+	public int[] getNumCharsToWin(int[] topNumCharsRowCol) {
+ 		int[] numCharsToWin = new int[4];
+ 		
+ 		numCharsToWin[0] = TO_WIN - topNumCharsRowCol[0];//Comp Row Chars to Win
+ 		numCharsToWin[1] = TO_WIN - topNumCharsRowCol[1];//Comp Col Chars to Win
+ 		
+ 		numCharsToWin[2] = TO_WIN - topNumCharsRowCol[2];//Opp Row Chars to Win
+ 		numCharsToWin[3] = TO_WIN - topNumCharsRowCol[3];//Opp Col Chars to Win
+ 		
+ 		return numCharsToWin;
+ 	}
 
 	public int utility() {
 
@@ -198,6 +268,15 @@ public class State {
 				}
 			}
 		}
+		
+		int[] topNumCharsRowCol = getTopNumCharsRowCol();
+		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
+		
+		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1]) - (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
+		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
+		
+		utilityVal += (topCharsValue) + (numCharsLeftValue);
+		
 		return utilityVal; // Returning the utility value otherwise.
 	}
 
