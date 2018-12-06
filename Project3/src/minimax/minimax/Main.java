@@ -80,7 +80,7 @@ public class Main {
 		System.out.print("\n\n ");
 		final String TAB = "     ";
 		for (int i = 1; i <= State.N; i++) {
-			System.out.print(i);
+			System.out.print(" " + i + " ");
 		}
 		System.out.print(TAB);
 		if (aiFirst) {
@@ -96,13 +96,16 @@ public class Main {
 			System.out.print(currentRow);
 			for (int j = 0; j < State.N; j++) {
 				if (board[i][j] == DEFAULT) {
-					System.out.print("-");
+					System.out.print(" - ");
 				} else {
-					System.out.print(board[i][j]);
+					System.out.print(" " + board[i][j] + " ");
 				}
 			}
 			for (int j = 0; j < 2 && currentAction < ACTIONS.size(); j++) {
 				System.out.print(TAB);
+				if (currentAction % 2 == 0) {
+					System.out.print((currentAction == 0 ? 1 : currentAction) + ". ");
+				}
 				System.out.print(ACTIONS.get(currentAction).toString());
 				currentAction++;
 				if (i == State.N - 1 && currentAction < ACTIONS.size() - 1) {
@@ -110,18 +113,12 @@ public class Main {
 						if (currentAction % 2 != 0) {
 							System.out.print(TAB);
 						} else {
-							System.out.print("\n              ");
+							System.out.print("\n              " + currentAction + ". ");
 						}
 						System.out.print(ACTIONS.get(currentAction).toString());
-						// if (aiFirst && currentAction < ACTIONS.size()) {
-						// System.out.println(ACTIONS.get(currentAction).toString());
-						// currentAction++;
-						// }
-
 					}
 				}
 			}
-
 			System.out.println();
 		}
 		System.out.println("Player's move is: " + ACTIONS.get(ACTIONS.size() - 1).toString());
