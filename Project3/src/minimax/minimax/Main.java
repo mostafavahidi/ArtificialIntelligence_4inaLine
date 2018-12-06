@@ -1,4 +1,4 @@
-package minimax;
+package minimax.minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,22 +34,20 @@ public class Main {
 				opponentMove = Action.createAction(getOpponentMove());
 				ACTIONS.add(opponentMove);
 				state.move(opponentMove);
-
+				if (searcher.terminalTest(state)) {
+					System.out.println("Opponent has won!");
+					System.exit(0);
+				}
 				// Start the 25 second timer
 				timerThread = new Thread(timer);
 				timerThread.start(); // Start the timer
 				state = searcher.getNextState(state); // Search
 				timerThread.interrupt(); // Cancel the timer
-				try {
-					ACTIONS.add(state.getMostRecentAction());
-				} catch(NullPointerException e) {
-					System.out.println("Opponent has won!");
-					System.exit(0);
-				}
+				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
 				// If terminal state, declare it and exit
 				if (searcher.terminalTest(state)) {
-					System.out.println("Opponent has won!");
+					System.out.println("Player has won!");
 					System.exit(0);
 				}
 			}
@@ -60,12 +58,7 @@ public class Main {
 				timerThread.start(); // Start the timer
 				state = searcher.getNextState(state); // Search
 				timerThread.interrupt(); // Cancel the timer
-				try {
-					ACTIONS.add(state.getMostRecentAction());
-				} catch(NullPointerException e) {
-					System.out.println("Player has won!");
-					System.exit(0);
-				}
+				ACTIONS.add(state.getMostRecentAction());
 				printBoard(state, playerAction, aiFirst);
 				// If terminal state, declare it and exit
 				if (searcher.terminalTest(state)) {
@@ -75,6 +68,10 @@ public class Main {
 				opponentMove = Action.createAction(getOpponentMove());
 				state.move(opponentMove);
 				ACTIONS.add(opponentMove);
+				if (searcher.terminalTest(state)) {
+					System.out.println("Opponent has won!");
+					System.exit(0);
+				}
 			}
 		}
 	}
