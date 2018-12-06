@@ -8,7 +8,7 @@ import player.Player;
 public class Search {
 	private final Random rand = new Random();
 	private final int WIN_CONST = 200;
-	private final long TIME_LIMIT = 10000;
+	private final long TIME_LIMIT = 7000;
 	private long startTime;
 	private boolean stop;
 
@@ -68,7 +68,8 @@ public class Search {
 	}
 
 	// Returns a utility value
-	public int maxVal(State state, int alpha, int beta, int depth, long timeLimit) {
+	public int maxVal(State state, int alpha, int beta, int depth,
+			long timeLimit) {
 		// Time has run out, return whatever the current state holds
 		long current = System.currentTimeMillis();
 		long elapsed = current - startTime;
@@ -78,7 +79,8 @@ public class Search {
 		// System.out.println(depth);
 		List<State> successors = state.getSuccessors();
 		for (State nextState : successors) {
-			alpha = Math.max(alpha, minVal(nextState, alpha, beta, depth - 1, timeLimit));
+			alpha = Math.max(alpha,
+					minVal(nextState, alpha, beta, depth - 1, timeLimit));
 
 			// Time is out, use whatever value the method is currently at
 			if (Thread.interrupted()) {
@@ -93,7 +95,8 @@ public class Search {
 	}
 
 	// Returns a utility value
-	public int minVal(State state, int alpha, int beta, int depth, long timeLimit) {
+	public int minVal(State state, int alpha, int beta, int depth,
+			long timeLimit) {
 		long current = System.currentTimeMillis();
 		long elapsed = current - startTime;
 		if (terminalTest(state) || depth == 0 || elapsed >= timeLimit) {
@@ -102,7 +105,8 @@ public class Search {
 		// System.out.println(depth);
 		List<State> successors = state.getSuccessors();
 		for (State nextState : successors) {
-			beta = Math.min(beta, maxVal(nextState, alpha, beta, depth - 1, timeLimit));
+			beta = Math.min(beta,
+					maxVal(nextState, alpha, beta, depth - 1, timeLimit));
 
 			// Time is out, use whatever value the method is currently at
 			if (Thread.interrupted()) {
@@ -128,10 +132,13 @@ public class Search {
 				char player = board[r][c];
 				if (player == EMPTY_SPACE)
 					continue;
-				if (c + 3 < DIM && player == board[r][c + 1] && player == board[r][c + 2] && player == board[r][c + 3])
+				if (c + 3 < DIM && player == board[r][c + 1]
+						&& player == board[r][c + 2]
+						&& player == board[r][c + 3])
 					return true;
 				if (r + 3 < DIM) {
-					if (player == board[r + 1][c] && player == board[r + 2][c] && player == board[r + 3][c])
+					if (player == board[r + 1][c] && player == board[r + 2][c]
+							&& player == board[r + 3][c])
 						return true;
 				}
 			}

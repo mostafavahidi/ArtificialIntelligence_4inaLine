@@ -62,28 +62,38 @@ public class State {
 		return successors;
 	}
 
-	private int longestChain() {
+	private int longestChain(Player player) {
 		int longest = 0;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				longest = Math.max(longest, lengthFromCell(i, j));
+				longest = Math.max(longest, lengthFromCell(i, j, player));
 			}
 		}
 		return longest;
 	}
 
-	private int lengthFromCell(int i, int j) {
-		return Math.max(longestChainWithDirection(i, j, Direction.UP) + longestChainWithDirection(i, j, Direction.DOWN),
-				longestChainWithDirection(i, j, Direction.LEFT) + longestChainWithDirection(i, j, Direction.RIGHT));
+	private int lengthFromCell(int i, int j, Player player) {
+		return Math.max(
+				longestChainWithDirection(i, j, Direction.UP, player)
+						+ longestChainWithDirection(i, j, Direction.DOWN,
+								player),
+				longestChainWithDirection(i, j, Direction.LEFT, player)
+						+ longestChainWithDirection(i, j, Direction.RIGHT,
+								player));
 	}
 
-	private int longestChainWithDirection(int i, int j, Direction dir) {
+	private int longestChainWithDirection(int row, int col, Direction dir,
+			Player player) {
 		int length = 0;
-		if (dir == Direction.UP && i == 0 || dir == Direction.DOWN && i == N - 1 || dir == Direction.LEFT && j == 0
+		int i = row;
+		int j = col;
+		if (dir == Direction.UP && i == 0 || dir == Direction.DOWN
+				&& i == N - 1 || dir == Direction.LEFT && j == 0
 				|| dir == Direction.RIGHT && j == N - 1) {
 			return length;
 		}
-		while (i >= 0 && i < N && j >= 0 && j < N && board[i][j] == Player.COMPUTER.value()) {
+		while (i >= 0 && i < N && j >= 0 && j < N
+				&& board[i][j] == player.value()) {
 			if (dir == Direction.UP) {
 				i--;
 			} else if (dir == Direction.DOWN) {
@@ -92,11 +102,62 @@ public class State {
 				j--;
 			} else if (dir == Direction.RIGHT) {
 				j++;
-			} // Check if the chain is capable of being completed. If not, don't
-				// increment length
+			}
 			length++;
 		}
-		return length - 1;
+		if (chainCanBeCompleted(row, col, dir, player)) {
+			return length - 1;
+		}
+		return 0;
+	}
+
+	private boolean chainCanBeCompleted(int row, int col, Direction dir,
+			Player player) {
+		Player opponent = player == Player.COMPUTER ? Player.OPPONENT
+				: Player.COMPUTER;
+		int possibleLength = 0;
+		switch (dir) {
+		case UP:
+		case DOWN:
+			for (int i = row; i < N; i++) {
+				if (board[i][col] != opponent.value()) {
+					possibleLength++;
+					if (possibleLength == 4) {
+						return true;
+					}
+				}
+			}
+			for (int i = row - 1; i >= 0; i--) {
+				if (board[i][col] != opponent.value()) {
+					possibleLength++;
+					if (possibleLength == 4) {
+						return true;
+					}
+				}
+			}
+			break;
+		case LEFT:
+		case RIGHT:
+			for (int i = col; i < N; i++) {
+				if (board[row][i] != opponent.value()) {
+					possibleLength++;
+					if (possibleLength == 4) {
+						return true;
+					}
+				}
+			}
+			for (int i = col - 1; i >= 0; i--) {
+				if (board[row][i] != opponent.value()) {
+					possibleLength++;
+					if (possibleLength == 4) {
+						return true;
+					}
+				}
+			}
+			break;
+
+		}
+		return false;
 	}
 
 	public int utility() {
@@ -105,18 +166,38 @@ public class State {
 			return 0; // Returning 0 if the board is filled up and there is a
 						// draw.
 		}
-		// Make the longest chain weigh more than the following computations
-		int utilityVal = longestChain() * 10;
+
+		int utilityVal = 0;
+
+		// Find longest chain of computer
+		int longestChainValue = longestChain(Player.COMPUTER);
+		// If computer has finishing move, return MAX_VALUE
+		// if (longestChainValue >= 3) {
+		// return Integer.MAX_VALUE;
+		// }
+		// Give length of longest chain a 10x weight
+		utilityVal += longestChainValue * 10;
+
+		// Find longest chain of opponent
+		longestChainValue = longestChain(Player.OPPONENT);
+		// If opponent has finishing move, return MIN_VALUE
+		// if (longestChainValue >= 3) {
+		// return Integer.MIN_VALUE;
+		// }
+		utilityVal -= longestChainValue * 30;
+
+		// Add preference to moves closer to the center of the board
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (board[i][j] == Player.COMPUTER.value()) {
-					utilityVal += Math.abs(3 - j);
+					utilityVal -= Math.abs(4 - j);
+					utilityVal -= Math.abs(4 - i);
 				} else if (board[i][j] == Player.OPPONENT.value()) {
-					utilityVal -= Math.abs(3 - j);
+					utilityVal += Math.abs(4 - j);
+					utilityVal += Math.abs(4 - i);
 				}
 			}
 		}
-		// System.out.println(utilityVal);
 		return utilityVal; // Returning the utility value otherwise.
 	}
 
