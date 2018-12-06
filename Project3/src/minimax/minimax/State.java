@@ -12,6 +12,8 @@ public class State {
 
 	public static final int N = 8;
 	public static final int TO_WIN = 4;
+	private static final int LongestChainCompUtilWeight = 10;
+	private static final int LongestChainOppUtilWeight = 10;
 	private char[][] board;
 	private int numPieces = 0;
 	private Action mostRecentAction;
@@ -61,6 +63,56 @@ public class State {
 		}
 		Collections.shuffle(successors);
 		return successors;
+	}
+	
+	public int utility() {
+
+		if (numPieces == N * N) {
+			return 0; // Returning 0 if the board is filled up and there is a
+						// draw.
+		}
+
+		int utilityVal = 0;
+
+		// Find longest chain of computer
+		int longestChainValue = longestChain(Player.COMPUTER);
+		// Give length of longest chain for computer a weight.
+		utilityVal += longestChainValue * LongestChainCompUtilWeight;
+
+		
+		// Find longest chain of opponent
+		longestChainValue = longestChain(Player.OPPONENT);
+		//Give length of longest chain for opponent a weight.
+		utilityVal -= longestChainValue * LongestChainOppUtilWeight;
+
+		
+		// Add preference to moves closer to the center of the board
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (board[i][j] == Player.COMPUTER.value()) {
+					utilityVal -= Math.abs(4 - j);
+					utilityVal -= Math.abs(4 - i);
+				} else if (board[i][j] == Player.OPPONENT.value()) {
+					utilityVal += Math.abs(4 - j);
+					utilityVal += Math.abs(4 - i);
+				}
+			}
+		}
+		
+		//Get top number of chars found in any row for comp and opp, stored in an array.
+		int[] topNumCharsRowCol = getTopNumCharsRowCol();
+		//Get least number of pieces comp and opp have to place to be able to win in top row and cols. 
+		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
+		
+		//Get proper value for topCharsValue based on subtracting opp from comp.
+		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1]) - (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
+		//Get proper value for numCharsleftValue based on subtracting opp from comp.
+		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
+		
+		//Adjust utilityVal to portray topCharsValue and numCharsLeftValue.
+		utilityVal += (topCharsValue) + (numCharsLeftValue);
+		
+		return utilityVal; // Returning the utility value otherwise.
 	}
 
 	private int longestChain(Player player) {
@@ -230,55 +282,7 @@ public class State {
  		return numCharsToWin;
  	}
 
-	public int utility() {
-
-		if (numPieces == N * N) {
-			return 0; // Returning 0 if the board is filled up and there is a
-						// draw.
-		}
-
-		int utilityVal = 0;
-
-		// Find longest chain of computer
-		int longestChainValue = longestChain(Player.COMPUTER);
-		// If computer has finishing move, return MAX_VALUE
-		// if (longestChainValue >= 3) {
-		// return Integer.MAX_VALUE;
-		// }
-		// Give length of longest chain a 10x weight
-		utilityVal += longestChainValue * 10;
-
-		// Find longest chain of opponent
-		longestChainValue = longestChain(Player.OPPONENT);
-		// If opponent has finishing move, return MIN_VALUE
-		if (longestChainValue >= 3) {
-			return Integer.MIN_VALUE;
-		}
-		utilityVal -= longestChainValue * 10;
-
-		// Add preference to moves closer to the center of the board
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (board[i][j] == Player.COMPUTER.value()) {
-					utilityVal -= Math.abs(4 - j);
-					utilityVal -= Math.abs(4 - i);
-				} else if (board[i][j] == Player.OPPONENT.value()) {
-					utilityVal += Math.abs(4 - j);
-					utilityVal += Math.abs(4 - i);
-				}
-			}
-		}
-		
-		int[] topNumCharsRowCol = getTopNumCharsRowCol();
-		int[] numCharsToWin = getNumCharsToWin(topNumCharsRowCol);
-		
-		int topCharsValue = (topNumCharsRowCol[0] + topNumCharsRowCol[1]) - (topNumCharsRowCol[2] + topNumCharsRowCol[3]);
-		int numCharsLeftValue = (numCharsToWin[0] + numCharsToWin[1]) - (numCharsToWin[2] + numCharsToWin[3]);
-		
-		utilityVal += (topCharsValue) + (numCharsLeftValue);
-		
-		return utilityVal; // Returning the utility value otherwise.
-	}
+	
 
 	public char[][] getBoard() {
 		return this.board;
