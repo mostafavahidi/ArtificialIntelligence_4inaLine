@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,12 @@ public class Main {
 				timerThread.start(); // Start the timer
 				state = searcher.getNextState(state); // Search
 				timerThread.interrupt(); // Cancel the timer
-				ACTIONS.add(state.getMostRecentAction());
+				try {
+					ACTIONS.add(state.getMostRecentAction());
+				} catch(NullPointerException e) {
+					System.out.println("Opponent has won!");
+					System.exit(0);
+				}
 				printBoard(state, playerAction, aiFirst);
 				// If terminal state, declare it and exit
 				if (searcher.terminalTest(state)) {
@@ -55,7 +60,12 @@ public class Main {
 				timerThread.start(); // Start the timer
 				state = searcher.getNextState(state); // Search
 				timerThread.interrupt(); // Cancel the timer
-				ACTIONS.add(state.getMostRecentAction());
+				try {
+					ACTIONS.add(state.getMostRecentAction());
+				} catch(NullPointerException e) {
+					System.out.println("Player has won!");
+					System.exit(0);
+				}
 				printBoard(state, playerAction, aiFirst);
 				// If terminal state, declare it and exit
 				if (searcher.terminalTest(state)) {

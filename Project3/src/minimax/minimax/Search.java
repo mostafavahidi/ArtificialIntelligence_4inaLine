@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 import java.util.List;
 import java.util.Random;

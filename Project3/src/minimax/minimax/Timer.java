@@ -1,4 +1,4 @@
-package minimax.minimax;
+package minimax;
 
 public class Timer implements Runnable {
 	private Thread parentThread;
