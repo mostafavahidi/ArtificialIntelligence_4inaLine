@@ -79,7 +79,6 @@ public class State {
 		// Give length of longest chain for computer a weight.
 		utilityVal += longestChainValue * LongestChainCompUtilWeight;
 
-		
 		// Find longest chain of opponent
 		longestChainValue = longestChain(Player.OPPONENT);
 		//Give length of longest chain for opponent a weight.
