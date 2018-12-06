@@ -181,10 +181,10 @@ public class State {
 		// Find longest chain of opponent
 		longestChainValue = longestChain(Player.OPPONENT);
 		// If opponent has finishing move, return MIN_VALUE
-		// if (longestChainValue >= 3) {
-		// return Integer.MIN_VALUE;
-		// }
-		utilityVal -= longestChainValue * 30;
+		if (longestChainValue >= 3) {
+			return Integer.MIN_VALUE;
+		}
+		utilityVal -= longestChainValue * 10;
 
 		// Add preference to moves closer to the center of the board
 		for (int i = 0; i < N; i++) {
